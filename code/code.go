@@ -1,4 +1,4 @@
-package main
+package code
 
 import (
 	"fmt"
@@ -6,15 +6,14 @@ import (
 	"strconv"
 )
 
-func convertLine(line string) string {
-	var binaryInstruction string
+// Returns binary representation of instruction. Entrypoint for code package
+// Determines instruction type(A or C) and passes them to correct handlers
+func ConvertLine(line string) string {
 	if strings.HasPrefix(line, "@") {
-		binaryInstruction = convertTypeA(line)
+		return convertTypeA(line)
 	} else {
-		binaryInstruction = convertTypeC(line)
+		return convertTypeC(line)
 	}
-
-	return binaryInstruction
 }
 
 // Returns 16 bit binary representation of A-type instruction 
