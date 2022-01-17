@@ -1,33 +1,45 @@
 package code
 
 import (
+	"errors"
 	"fmt"
-	"strings"
+	"log"
+	"math"
 	"strconv"
+	"strings"
+
+	"github.com/overload77/go-hack-assembler/instructionset"
+	"github.com/overload77/go-hack-assembler/parse"
 )
 
 // Returns binary representation of instruction. Entrypoint for code package
 // Determines instruction type(A or C) and passes them to correct handlers
-func ConvertLine(line string) string {
+func ConvertLine(line string, cInstructionSet *instructionset.CInstructionSet) string {
 	if strings.HasPrefix(line, "@") {
 		return convertTypeA(line)
 	} else {
-		return convertTypeC(line)
+		return convertTypeC(line, cInstructionSet)
 	}
 }
 
 // Returns 16 bit binary representation of A-type instruction 
 func convertTypeA(line string) string {
-	// TODO: Parser and C type instruction decoder before symbols
 	valueOrSymbol := line[1:]
-	value, _ := getValueOfTypeA(valueOrSymbol)
+	value, err := getValueOfTypeA(valueOrSymbol)
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	spacePrependedRepr := fmt.Sprintf("%16b", value)
 	return strings.ReplaceAll(spacePrependedRepr, " ", "0")
 }
 
 
-func convertTypeC(line string) string {
-	return ""
+// Returns 16 bit binary representation of C-type instruction 
+func convertTypeC(line string, cInstructionSet *instructionset.CInstructionSet) string {
+	dest, comp, jump := parse.ParseTypeCInstruction(line)
+	return fmt.Sprintf("111%s%s%s", cInstructionSet.CompSet[comp],
+					   cInstructionSet.DestSet[dest], cInstructionSet.JumpSet[jump])
 }
 
 // Gets integer value from value part of A-type instruction(After @ part)
@@ -36,7 +48,10 @@ func getValueOfTypeA(valueOrSymbol string) (int, error) {
 	value, err := strconv.Atoi(valueOrSymbol)
 	if err != nil {
 		// TODO: Lookup symbol table and get it
-		fmt.Println("Error:", err)
+		return 0, err
+	} else if value > int(math.Pow(2, 15)) {
+		return 0, errors.New("Value overflows 15-bits")
 	}
+
 	return value, nil
 }
