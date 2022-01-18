@@ -19,17 +19,17 @@ func main() {
 	}
 
 	filename := os.Args[1]
-    file, err := os.Open(filename)
-    if err != nil {
-        log.Fatal(err)
-    }
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	instructionset := instructionset.NewCInstructionSet()
 	scanner := bufio.NewScanner(file)
-    for scanner.Scan() {
-        line := scanner.Text()
+	for scanner.Scan() {
+		line := scanner.Text()
 		fmt.Println(code.ConvertLine(line, instructionset))
-    }
+	}
 
 }
 
