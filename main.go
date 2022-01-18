@@ -9,6 +9,7 @@ import (
 	"strings"
 
 	"github.com/overload77/go-hack-assembler/code"
+	"github.com/overload77/go-hack-assembler/instructionset"
 )
 
 func main() {
@@ -23,10 +24,11 @@ func main() {
         log.Fatal(err)
     }
 
+	instructionset := instructionset.NewCInstructionSet()
 	scanner := bufio.NewScanner(file)
     for scanner.Scan() {
         line := scanner.Text()
-		fmt.Println(code.ConvertLine(line))
+		fmt.Println(code.ConvertLine(line, instructionset))
     }
 
 }
