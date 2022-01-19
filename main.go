@@ -10,6 +10,7 @@ import (
 
 	"github.com/overload77/go-hack-assembler/code"
 	"github.com/overload77/go-hack-assembler/instructionset"
+	"github.com/overload77/go-hack-assembler/symboltable"
 )
 
 func main() {
@@ -17,20 +18,10 @@ func main() {
 	if err := validateArgument(); err != nil {
 		log.Fatal(err)
 	}
-
 	filename := os.Args[1]
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	instructionset := instructionset.NewCInstructionSet()
-	scanner := bufio.NewScanner(file)
-	for scanner.Scan() {
-		line := scanner.Text()
-		fmt.Println(code.ConvertLine(line, instructionset))
-	}
-
+	symbolTable := symboltable.NewSymbolTable()
+	firstPass(filename, symbolTable)
+	secondPass(filename, symbolTable)
 }
 
 
@@ -42,4 +33,43 @@ func validateArgument() error {
 	}
 
 	return nil
+}
+
+func firstPass(filename string, symbolTable *symboltable.SymbolTable) {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	scanner := bufio.NewScanner(file)
+	currentInstructionAddr := 0
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "//") || len(line) == 0 {
+			continue
+		} else if labelStart := strings.Index(line, "("); labelStart != -1 {
+			symbol := line[labelStart + 1:strings.Index(line, ")")]
+			symbolTable.AddLabelToTable(symbol, currentInstructionAddr)
+			continue
+		}
+		currentInstructionAddr++
+	}
+}
+
+func secondPass(filename string, symbolTable *symboltable.SymbolTable) {
+	file, err := os.Open(filename)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	instructionset := instructionset.NewCInstructionSet()
+	scanner := bufio.NewScanner(file)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
+			continue
+		}
+
+		fmt.Println(code.ConvertLine(line, symbolTable, instructionset))
+	}
 }
