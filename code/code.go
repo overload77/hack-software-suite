@@ -9,7 +9,7 @@ import (
 	"strings"
 
 	"github.com/overload77/go-hack-assembler/instructionset"
-	"github.com/overload77/go-hack-assembler/parse"
+	"github.com/overload77/go-hack-assembler/parser"
 )
 
 // Returns binary representation of instruction. Entrypoint for code package
@@ -34,10 +34,9 @@ func convertTypeA(line string) string {
 	return strings.ReplaceAll(spacePrependedRepr, " ", "0")
 }
 
-
 // Returns 16 bit binary representation of C-type instruction 
 func convertTypeC(line string, cInstructionSet *instructionset.CInstructionSet) string {
-	dest, comp, jump := parse.ParseTypeCInstruction(line)
+	dest, comp, jump := parser.ParseTypeCInstruction(line)
 	return fmt.Sprintf("111%s%s%s", cInstructionSet.CompSet[comp],
 					   cInstructionSet.DestSet[dest], cInstructionSet.JumpSet[jump])
 }
@@ -49,7 +48,7 @@ func getValueOfTypeA(valueOrSymbol string) (int, error) {
 	if err != nil {
 		// TODO: Lookup symbol table and get it
 		return 0, err
-	} else if value > int(math.Pow(2, 15)) {
+	} else if value >= int(math.Pow(2, 15)) {
 		return 0, errors.New("Value overflows 15-bits")
 	}
 
