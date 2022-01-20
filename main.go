@@ -43,8 +43,8 @@ func runFirstPass(filename string, symbolTable *symboltable.SymbolTable) {
 	scanner := bufio.NewScanner(file)
 	currentInstructionAddr := 0
 	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, "//") || len(line) == 0 {
+		line := strings.ReplaceAll(scanner.Text(), " ", "")
+		if strings.HasPrefix(line, "//") || len(line) == 0 {
 			continue
 		} else if labelStart := strings.Index(line, "("); labelStart != -1 {
 			symbol := line[labelStart + 1:strings.Index(line, ")")]
@@ -62,8 +62,8 @@ func runSecondPass(filename string, symbolTable *symboltable.SymbolTable) {
 	scanner := bufio.NewScanner(sourceFile)
 	writer := bufio.NewWriter(hackFile)
 	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
+		line := strings.ReplaceAll(scanner.Text(), " ", "")
+		if strings.HasPrefix(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
 			continue
 		}
 		binaryInstr := code.ConvertLine(line, symbolTable, instructionset)
