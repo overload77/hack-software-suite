@@ -1,3 +1,4 @@
+// Package instructionset defines default set for C-type instructions
 package instructionset
 
 type CInstructionSet struct {
