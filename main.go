@@ -3,7 +3,6 @@ package main
 import (
 	"bufio"
 	"errors"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -13,8 +12,9 @@ import (
 	"github.com/overload77/go-hack-assembler/symboltable"
 )
 
+
 func main() {
-	fmt.Println("Starting")
+	log.Println("Starting")
 	if err := validateArgument(); err != nil {
 		log.Fatal(err)
 	}
@@ -62,14 +62,23 @@ func secondPass(filename string, symbolTable *symboltable.SymbolTable) {
 		log.Fatal(err)
 	}
 
+	hackFile, err := os.Create(strings.ReplaceAll(filename, ".asm", ".hack"))
+	if err != nil {
+		log.Fatal(err)
+	}
+
 	instructionset := instructionset.NewCInstructionSet()
 	scanner := bufio.NewScanner(file)
+	writer := bufio.NewWriter(hackFile)
 	for scanner.Scan() {
 		line := scanner.Text()
 		if strings.Contains(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
 			continue
 		}
 
-		fmt.Println(code.ConvertLine(line, symbolTable, instructionset))
+		binaryInstr := code.ConvertLine(line, symbolTable, instructionset)
+		writer.WriteString(binaryInstr + "\n")
 	}
+	writer.Flush()
+	hackFile.Close()
 }
