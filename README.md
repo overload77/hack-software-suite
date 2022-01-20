@@ -1,5 +1,5 @@
 # Hack assembler
-Assembler for Hack machine language in go
+Two-pass assembler for Hack machine language in go
 
 ## Build & use
 ```bash
