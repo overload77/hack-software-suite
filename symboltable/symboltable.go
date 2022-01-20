@@ -1,3 +1,4 @@
+// Package symboltable defines symbol table with predefined symbols and helper methods
 package symboltable
 
 type SymbolTable struct {

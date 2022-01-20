@@ -1,3 +1,5 @@
+// Package code's job is to take the single assembly instruction
+// and convert to its 16 bit machine representation
 package code
 
 import (

@@ -1,3 +1,4 @@
+// Package parser parses C-type instruction to it's fields dest, comp and jump
 package parser
 
 import "strings"
