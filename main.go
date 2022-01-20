@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"errors"
 	"log"
 	"os"
 	"strings"
@@ -12,30 +11,30 @@ import (
 	"github.com/overload77/go-hack-assembler/symboltable"
 )
 
-
 func main() {
-	log.Println("Starting")
-	if err := validateArgument(); err != nil {
-		log.Fatal(err)
+	validateArgument()
+	assemble()
+	log.Println("Completed!")
+}
+
+func validateArgument() {
+	if len(os.Args) != 2 {
+		log.Fatal("Invalid number of arguments")
+	} else if !strings.HasSuffix(os.Args[1], ".asm") {
+		log.Fatal("Invalid file extension. Should end with .asm")
 	}
+}
+
+// Starts two-pass assembling process
+func assemble() {
 	filename := os.Args[1]
 	symbolTable := symboltable.NewSymbolTable()
-	firstPass(filename, symbolTable)
-	secondPass(filename, symbolTable)
+	runFirstPass(filename, symbolTable)
+	runSecondPass(filename, symbolTable)
 }
 
-
-func validateArgument() error {
-	if len(os.Args) != 2 {
-		return errors.New("Invalid number of arguments")
-	} else if !strings.HasSuffix(os.Args[1], ".asm") {
-		return errors.New("Invalid file extension. Should end with .asm")
-	}
-
-	return nil
-}
-
-func firstPass(filename string, symbolTable *symboltable.SymbolTable) {
+// First pass populates symbol table with labels
+func runFirstPass(filename string, symbolTable *symboltable.SymbolTable) {
 	file, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
@@ -56,8 +55,29 @@ func firstPass(filename string, symbolTable *symboltable.SymbolTable) {
 	}
 }
 
-func secondPass(filename string, symbolTable *symboltable.SymbolTable) {
-	file, err := os.Open(filename)
+// Second pass converts instructions line by line and writes to file in ASCII format
+func runSecondPass(filename string, symbolTable *symboltable.SymbolTable) {
+	sourceFile, hackFile := openFiles(filename)
+	instructionset := instructionset.NewCInstructionSet()
+	scanner := bufio.NewScanner(sourceFile)
+	writer := bufio.NewWriter(hackFile)
+	for scanner.Scan() {
+		line := scanner.Text()
+		if strings.Contains(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
+			continue
+		}
+		binaryInstr := code.ConvertLine(line, symbolTable, instructionset)
+		writer.WriteString(binaryInstr + "\n")
+	}
+	
+	writer.Flush()
+	sourceFile.Close()
+	hackFile.Close()
+}
+
+// Returns source and output files
+func openFiles(filename string) (*os.File, *os.File) {
+	sourceFile, err := os.Open(filename)
 	if err != nil {
 		log.Fatal(err)
 	}
@@ -67,18 +87,5 @@ func secondPass(filename string, symbolTable *symboltable.SymbolTable) {
 		log.Fatal(err)
 	}
 
-	instructionset := instructionset.NewCInstructionSet()
-	scanner := bufio.NewScanner(file)
-	writer := bufio.NewWriter(hackFile)
-	for scanner.Scan() {
-		line := scanner.Text()
-		if strings.Contains(line, "//") || strings.Contains(line, "(") || len(line) == 0 {
-			continue
-		}
-
-		binaryInstr := code.ConvertLine(line, symbolTable, instructionset)
-		writer.WriteString(binaryInstr + "\n")
-	}
-	writer.Flush()
-	hackFile.Close()
+	return sourceFile, hackFile
 }
