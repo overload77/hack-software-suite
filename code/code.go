@@ -19,7 +19,7 @@ import (
 // Determines instruction type(A or C) and passes them to correct handlers
 func ConvertLine(line string, symbolTable *symboltable.SymbolTable,
 				 cInstructionSet *instructionset.CInstructionSet) string {
-	line = strings.ReplaceAll(line, " ", "")
+	line = trimComment(line)
 	if strings.HasPrefix(line, "@") {
 		return convertTypeA(line, symbolTable)
 	} else {
@@ -62,4 +62,12 @@ func getValueOfTypeA(valueOrSymbol string, symbolTable *symboltable.SymbolTable)
 func getConstantsBinaryRepr(constant int) string {
 	spacePrependedRepr := fmt.Sprintf("%16b", constant)
 	return strings.ReplaceAll(spacePrependedRepr, " ", "0")
+}
+
+// Helper function to trim inline comment if exists
+func trimComment(line string) string {
+	if commentStart := strings.Index(line, "//"); commentStart != -1 {
+		return line[:commentStart]
+	}
+	return line
 }
