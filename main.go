@@ -53,6 +53,7 @@ func runFirstPass(filename string, symbolTable *symboltable.SymbolTable) {
 		}
 		currentInstructionAddr++
 	}
+	file.Close()
 }
 
 // Second pass converts instructions line by line and writes to file in ASCII format
