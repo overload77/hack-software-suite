@@ -49,7 +49,7 @@ func convertTypeC(line string, cInstructionSet *instructionset.CInstructionSet) 
 func getValueOfTypeA(valueOrSymbol string, symbolTable *symboltable.SymbolTable) (int, error) {
 	value, err := strconv.Atoi(valueOrSymbol)
 	if err != nil {
-		value = symbolTable.GetVariable(valueOrSymbol)
+		value = symbolTable.GetSymbol(valueOrSymbol)
 	} else if value >= int(math.Pow(2, 15)) {
 		return 0, errors.New("Value overflows 15-bits")
 	}

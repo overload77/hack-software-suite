@@ -49,8 +49,8 @@ func (table *SymbolTable) AddVariableToTable(symbol string) {
 	table.currentVarLocation++
 }
 
-// Helper wrapper to get(possibly after adding) variables address
-func (table *SymbolTable) GetVariable(symbol string) int {
+// Helper wrapper to get(possibly after adding) symbols address
+func (table *SymbolTable) GetSymbol(symbol string) int {
 	value, isPresent := table.Symbols[symbol]
 	if isPresent {
 		return value
