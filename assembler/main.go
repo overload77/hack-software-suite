@@ -53,6 +53,7 @@ func runFirstPass(filename string, symbolTable *symboltable.SymbolTable) {
 		}
 		currentInstructionAddr++
 	}
+
 	file.Close()
 }
 
@@ -60,6 +61,7 @@ func runFirstPass(filename string, symbolTable *symboltable.SymbolTable) {
 func runSecondPass(filename string, symbolTable *symboltable.SymbolTable) {
 	sourceFile, hackFile := openFiles(filename)
 	instructionset := instructionset.NewCInstructionSet()
+	
 	scanner := bufio.NewScanner(sourceFile)
 	writer := bufio.NewWriter(hackFile)
 	for scanner.Scan() {
@@ -70,7 +72,7 @@ func runSecondPass(filename string, symbolTable *symboltable.SymbolTable) {
 		binaryInstr := code.ConvertLine(line, symbolTable, instructionset)
 		writer.WriteString(binaryInstr + "\n")
 	}
-	
+
 	writer.Flush()
 	sourceFile.Close()
 	hackFile.Close()
