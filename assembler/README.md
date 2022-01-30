@@ -9,4 +9,4 @@ go build -o hackc
 This should create a Filename.hack file in the same directory
 
 ## Language specification
-![alt text](https://github.com/overload77/go-hack-assembler/blob/main/assembler/hack-spec.png?raw=true)
+![alt text](https://github.com/overload77/hack-software-suite/blob/main/assembler/hack-spec.png?raw=true)
