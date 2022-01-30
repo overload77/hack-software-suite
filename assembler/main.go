@@ -6,9 +6,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/overload77/go-hack-assembler/code"
-	"github.com/overload77/go-hack-assembler/instructionset"
-	"github.com/overload77/go-hack-assembler/symboltable"
+	"github.com/overload77/hack-software-suite/assembler/code"
+	"github.com/overload77/hack-software-suite/assembler/instructionset"
+	"github.com/overload77/hack-software-suite/assembler/symboltable"
 )
 
 func main() {

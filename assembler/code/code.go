@@ -10,9 +10,9 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/overload77/go-hack-assembler/instructionset"
-	"github.com/overload77/go-hack-assembler/parser"
-	"github.com/overload77/go-hack-assembler/symboltable"
+	"github.com/overload77/hack-software-suite/assembler/instructionset"
+	"github.com/overload77/hack-software-suite/assembler/parser"
+	"github.com/overload77/hack-software-suite/assembler/symboltable"
 )
 
 // Returns binary representation of instruction. Entrypoint for code package
