@@ -69,5 +69,6 @@ func trimComment(line string) string {
 	if commentStart := strings.Index(line, "//"); commentStart != -1 {
 		return line[:commentStart]
 	}
+	
 	return line
 }
