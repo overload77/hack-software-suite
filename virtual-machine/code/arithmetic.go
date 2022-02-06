@@ -6,14 +6,14 @@ import (
 )
 
 type ArithmeticCommand struct {
-	Handlers map[string]func(strings.Builder)
+	Handlers map[string]func(*strings.Builder)
 	currentBranchNum int
 }
 
 
-func GetArithmeticCommand() *ArithmeticCommand {
-	arithmeticCommand := &ArithmeticCommand{currentBranchNum: 0}
-	arithmeticCommand.Handlers = map[string]func(strings.Builder) {
+func GetArithmeticCommand(startingBranchNum int) *ArithmeticCommand {
+	arithmeticCommand := &ArithmeticCommand{currentBranchNum: startingBranchNum}
+	arithmeticCommand.Handlers = map[string]func(*strings.Builder) {
 		"add": (*arithmeticCommand).translateAdd,
 		"sub": (*arithmeticCommand).translateSub,
 		"neg": (*arithmeticCommand).translateNeg,
@@ -28,7 +28,7 @@ func GetArithmeticCommand() *ArithmeticCommand {
 }
 
 
-func (arithmeticCommand *ArithmeticCommand) translateAdd(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateAdd(builder *strings.Builder) {
 	builder.WriteString("// Add\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -38,7 +38,7 @@ func (arithmeticCommand *ArithmeticCommand) translateAdd(builder strings.Builder
 	builder.WriteString("M=D+M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateSub(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateSub(builder *strings.Builder) {
 	builder.WriteString("// Sub\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -48,14 +48,14 @@ func (arithmeticCommand *ArithmeticCommand) translateSub(builder strings.Builder
 	builder.WriteString("M=M-D\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateNeg(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateNeg(builder *strings.Builder) {
 	builder.WriteString("// Neg\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("A=M-1\n")
 	builder.WriteString("M=-M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateEq(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateEq(builder *strings.Builder) {
 	builder.WriteString("// Eq\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -74,7 +74,7 @@ func (arithmeticCommand *ArithmeticCommand) translateEq(builder strings.Builder)
 	arithmeticCommand.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateGt(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateGt(builder *strings.Builder) {
 	builder.WriteString("// Gt\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -93,7 +93,7 @@ func (arithmeticCommand *ArithmeticCommand) translateGt(builder strings.Builder)
 	arithmeticCommand.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateLt(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateLt(builder *strings.Builder) {
 	builder.WriteString("// Lt\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -112,7 +112,7 @@ func (arithmeticCommand *ArithmeticCommand) translateLt(builder strings.Builder)
 	arithmeticCommand.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateAnd(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateAnd(builder *strings.Builder) {
 	builder.WriteString("// And\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -122,7 +122,7 @@ func (arithmeticCommand *ArithmeticCommand) translateAnd(builder strings.Builder
 	builder.WriteString("M=D&M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateOr(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateOr(builder *strings.Builder) {
 	builder.WriteString("// Or\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("M=M-1\n")
@@ -132,7 +132,7 @@ func (arithmeticCommand *ArithmeticCommand) translateOr(builder strings.Builder)
 	builder.WriteString("M=D|M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateNot(builder strings.Builder) {
+func (arithmeticCommand *ArithmeticCommand) translateNot(builder *strings.Builder) {
 	builder.WriteString("// Not\n")
 	builder.WriteString("@SP\n")
 	builder.WriteString("A=M-1\n")

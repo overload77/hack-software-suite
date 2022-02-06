@@ -5,13 +5,13 @@ import "strings"
 type CodeContext struct {
 	arithmeticHandler *ArithmeticCommand
 	// memoryHandler *MemoryCommand
-	builder strings.Builder
+	builder *strings.Builder
 }
 
 func GetCodeContext() *CodeContext {
 	return &CodeContext {
-		arithmeticHandler: GetArithmeticCommand(),
-		builder: strings.Builder{},
+		arithmeticHandler: GetArithmeticCommand(0),
+		builder: &strings.Builder{},
 	}
 }
 
