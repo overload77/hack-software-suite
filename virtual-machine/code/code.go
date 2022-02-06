@@ -1,6 +1,9 @@
 package code
 
-import "strings"
+import (
+	"log"
+	"strings"
+)
 
 type CodeContext struct {
 	arithmeticHandler *ArithmeticCommand
@@ -8,9 +11,10 @@ type CodeContext struct {
 	builder *strings.Builder
 }
 
-func GetCodeContext() *CodeContext {
+func GetCodeContext(params ...int) *CodeContext {
+	startingBranchNum := getStartingBranchNumber(params...)
 	return &CodeContext {
-		arithmeticHandler: GetArithmeticCommand(0),
+		arithmeticHandler: GetArithmeticCommand(startingBranchNum),
 		builder: &strings.Builder{},
 	}
 }
@@ -26,4 +30,15 @@ func (context *CodeContext) TranslateMemory(pushOrPop string, segment string, in
 
 func (context *CodeContext) GetCodeString() string {
 	return context.builder.String()
+}
+
+// Get starting value from optional parameters of CodeContext. Needed for multi-threading
+func getStartingBranchNumber(params ...int) int {
+	if len(params) > 1 {
+		log.Fatal("Invalid arguments for CodeContext")
+	} else if len(params) == 1 {
+		return params[0]
+	}
+
+	return 0
 }

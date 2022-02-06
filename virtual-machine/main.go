@@ -22,13 +22,14 @@ func main() {
 	}
 
 	scanner := bufio.NewScanner(file)
+	codeContext := code.GetCodeContext()
 	for scanner.Scan() {
 		line := scanner.Text()
 		commandType, commandName, firstArg, secondArg := parser.ParseLine(line)
 		fmt.Println("Parsed line:", commandType, commandName, firstArg, secondArg)
-		// coded := code.TranslateCommand(commandType, commandName, firstArg, secondArg)
-		// fmt.Println("Coded:", coded)
+		translateCommand(codeContext, commandType, commandName, firstArg, secondArg)
 	}
+	fmt.Println("Coded:", codeContext.GetCodeString())
 
 	file.Close()
 }
@@ -41,15 +42,13 @@ func validateArgument() {
 	}
 }
 
-func translateCommand(commandType parser.CommandType, commandName string,
-					  firstCommandArg string, secondCommandArg string) string {
+func translateCommand(codeContext *code.CodeContext, commandType parser.CommandType,
+			commandName string, firstCommandArg string, secondCommandArg string) {
 	if commandType == parser.Arithmetic {
-		return code.TranslateArithmetic(commandName)
+		codeContext.TranslateArithmetic(commandName)
 	} else if commandType == parser.Memory {
-		return code.TranslateMemory(commandName, firstCommandArg, secondCommandArg)
+		codeContext.TranslateMemory(commandName, firstCommandArg, secondCommandArg)
 	}
-
-	return ""
 }
 
 // Returns source and output files
