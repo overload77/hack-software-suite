@@ -13,14 +13,15 @@ type CodeContext struct {
 
 func GetCodeContext(params ...int) *CodeContext {
 	startingBranchNum := getStartingBranchNumber(params...)
+	builder := &strings.Builder{}
 	return &CodeContext {
-		arithmeticHandler: GetArithmeticCommand(startingBranchNum),
-		builder: &strings.Builder{},
+		arithmeticHandler: GetArithmeticCommand(startingBranchNum, builder),
+		builder: builder,
 	}
 }
 
 func (context *CodeContext) TranslateArithmetic(commandName string) {
-	context.arithmeticHandler.Handlers[commandName](context.builder)
+	context.arithmeticHandler.Handlers[commandName]()
 }
 
 // TODO
