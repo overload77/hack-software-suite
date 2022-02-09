@@ -11,7 +11,7 @@ const (
 	FunctionStuff CommandType = 3
 
 )
-var arithmeticCommands map[string]func() = code.GetArithmeticCommand().Handlers
+var arithmeticCommands map[string]func() = code.GetArithmeticTranslator().Handlers
 
 // Parses instruction into it's type and operands
 func ParseLine(line string) (CommandType, string, string, string) {

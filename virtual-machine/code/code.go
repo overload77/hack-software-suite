@@ -6,8 +6,8 @@ import (
 )
 
 type CodeContext struct {
-	arithmeticHandler *ArithmeticCommand
-	// memoryHandler *MemoryCommand
+	arithmeticTranslator *ArithmeticTranslator
+	memorySegmentTranslator *MemorySegmentTranslator
 	builder *strings.Builder
 }
 
@@ -15,18 +15,18 @@ func GetCodeContext(params ...int) *CodeContext {
 	startingBranchNum := getStartingBranchNumber(params...)
 	builder := &strings.Builder{}
 	return &CodeContext {
-		arithmeticHandler: GetArithmeticCommand(startingBranchNum, builder),
+		arithmeticTranslator: GetArithmeticTranslator(startingBranchNum, builder),
+		memorySegmentTranslator: GetMemorySegmentTranslator(builder),
 		builder: builder,
 	}
 }
 
 func (context *CodeContext) TranslateArithmetic(commandName string) {
-	context.arithmeticHandler.Handlers[commandName]()
+	context.arithmeticTranslator.Handlers[commandName]()
 }
 
-// TODO
 func (context *CodeContext) TranslateMemory(pushOrPop string, segment string, index string) {
-	context.builder.WriteString("todo")
+	context.memorySegmentTranslator.Handlers[pushOrPop](segment, index)
 }
 
 func (context *CodeContext) GetCodeString() string {

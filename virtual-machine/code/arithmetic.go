@@ -6,31 +6,32 @@ import (
 	"strings"
 )
 
-type ArithmeticCommand struct {
+type ArithmeticTranslator struct {
 	Handlers map[string]func()
 	currentBranchNum int
 	builder *strings.Builder
 }
 
 
-func GetArithmeticCommand(members ...interface{}) *ArithmeticCommand {
+func GetArithmeticTranslator(members ...interface{}) *ArithmeticTranslator {
 	startingBranchNum, builder := getBranchNumAndBuilder(members...)
-	arithmeticCommand := &ArithmeticCommand {
+	arithmeticTranslator := &ArithmeticTranslator {
 		currentBranchNum: startingBranchNum,
 		builder: builder,
 	}
-	arithmeticCommand.Handlers = map[string]func() {
-		"add": (*arithmeticCommand).translateAdd,
-		"sub": (*arithmeticCommand).translateSub,
-		"neg": (*arithmeticCommand).translateNeg,
-		"eq": (*arithmeticCommand).translateEq,
-		"gt": (*arithmeticCommand).translateGt,
-		"lt": (*arithmeticCommand).translateLt,
-		"and": (*arithmeticCommand).translateAnd,
-		"or": (*arithmeticCommand).translateOr,
-		"not": (*arithmeticCommand).translateNot,
+	arithmeticTranslator.Handlers = map[string]func() {
+		"add": arithmeticTranslator.translateAdd,
+		"sub": arithmeticTranslator.translateSub,
+		"neg": arithmeticTranslator.translateNeg,
+		"eq": arithmeticTranslator.translateEq,
+		"gt": arithmeticTranslator.translateGt,
+		"lt": arithmeticTranslator.translateLt,
+		"and": arithmeticTranslator.translateAnd,
+		"or": arithmeticTranslator.translateOr,
+		"not": arithmeticTranslator.translateNot,
 	}
-	return arithmeticCommand
+	
+	return arithmeticTranslator
 }
 
 // Helper function to interpret and return branch number and builder from variable parameters
@@ -38,120 +39,120 @@ func getBranchNumAndBuilder(members ...interface{}) (int, *strings.Builder) {
 	if memberLen := len(members); memberLen == 2 {
 		return members[0].(int), members[1].(*strings.Builder)
 	} else if memberLen != 0 {
-		log.Fatal("Wrong initialization of ArithmeticCommand")
+		log.Fatal("Wrong initialization of ArithmeticTranslator")
 	}
 	
 	return 0, &strings.Builder{}
 }
 
 
-func (arithmeticCommand *ArithmeticCommand) translateAdd() {
-	arithmeticCommand.builder.WriteString("// Add\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("M=D+M\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateAdd() {
+	arithmeticTranslator.builder.WriteString("// Add\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("M=D+M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateSub() {
-	arithmeticCommand.builder.WriteString("// Sub\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("M=M-D\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateSub() {
+	arithmeticTranslator.builder.WriteString("// Sub\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("M=M-D\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateNeg() {
-	arithmeticCommand.builder.WriteString("// Neg\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("A=M-1\n")
-	arithmeticCommand.builder.WriteString("M=-M\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateNeg() {
+	arithmeticTranslator.builder.WriteString("// Neg\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("A=M-1\n")
+	arithmeticTranslator.builder.WriteString("M=-M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateEq() {
-	arithmeticCommand.builder.WriteString("// Eq\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("D=M-D\n")
-	arithmeticCommand.builder.WriteString("M=1\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("D;JNE\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("0;JMP\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("M=0\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.currentBranchNum++
+func (arithmeticTranslator *ArithmeticTranslator) translateEq() {
+	arithmeticTranslator.builder.WriteString("// Eq\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("D=M-D\n")
+	arithmeticTranslator.builder.WriteString("M=1\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("D;JNE\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("0;JMP\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("M=0\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateGt() {
-	arithmeticCommand.builder.WriteString("// Gt\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("D=M-D\n")
-	arithmeticCommand.builder.WriteString("M=1\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("D;JLE\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("0;JMP\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("M=0\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.currentBranchNum++
+func (arithmeticTranslator *ArithmeticTranslator) translateGt() {
+	arithmeticTranslator.builder.WriteString("// Gt\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("D=M-D\n")
+	arithmeticTranslator.builder.WriteString("M=1\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("D;JLE\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("0;JMP\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("M=0\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateLt() {
-	arithmeticCommand.builder.WriteString("// Lt\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("D=M-D\n")
-	arithmeticCommand.builder.WriteString("M=1\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("D;JGE\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("0;JMP\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.builder.WriteString("M=0\n")
-	arithmeticCommand.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticCommand.currentBranchNum))
-	arithmeticCommand.currentBranchNum++
+func (arithmeticTranslator *ArithmeticTranslator) translateLt() {
+	arithmeticTranslator.builder.WriteString("// Lt\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("D=M-D\n")
+	arithmeticTranslator.builder.WriteString("M=1\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@ELSE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("D;JGE\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("0;JMP\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("M=0\n")
+	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.currentBranchNum++
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateAnd() {
-	arithmeticCommand.builder.WriteString("// And\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("M=D&M\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateAnd() {
+	arithmeticTranslator.builder.WriteString("// And\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("M=D&M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateOr() {
-	arithmeticCommand.builder.WriteString("// Or\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("M=M-1\n")
-	arithmeticCommand.builder.WriteString("A=M\n")
-	arithmeticCommand.builder.WriteString("D=M\n")
-	arithmeticCommand.builder.WriteString("A=A-1\n")
-	arithmeticCommand.builder.WriteString("M=D|M\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateOr() {
+	arithmeticTranslator.builder.WriteString("// Or\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("M=M-1\n")
+	arithmeticTranslator.builder.WriteString("A=M\n")
+	arithmeticTranslator.builder.WriteString("D=M\n")
+	arithmeticTranslator.builder.WriteString("A=A-1\n")
+	arithmeticTranslator.builder.WriteString("M=D|M\n")
 }
 
-func (arithmeticCommand *ArithmeticCommand) translateNot() {
-	arithmeticCommand.builder.WriteString("// Not\n")
-	arithmeticCommand.builder.WriteString("@SP\n")
-	arithmeticCommand.builder.WriteString("A=M-1\n")
-	arithmeticCommand.builder.WriteString("M=!M\n")
+func (arithmeticTranslator *ArithmeticTranslator) translateNot() {
+	arithmeticTranslator.builder.WriteString("// Not\n")
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("A=M-1\n")
+	arithmeticTranslator.builder.WriteString("M=!M\n")
 }
