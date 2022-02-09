@@ -1,0 +1,6 @@
+hackc
+*.asm
+*.hack
+
+hackvm
+*.vm
