@@ -129,6 +129,8 @@ func (memoryTranslator *MemorySegmentTranslator) pushDRegisterToSegment(segment,
 		memoryTranslator.writeDRegToPointer(index)
 	case "temp":
 		memoryTranslator.writeDRegToTemp(index)
+	case "static":
+		memoryTranslator.writeDRegToStatic(index)
 	default:
 		memoryTranslator.writeDRegToMappedSegments(segment, index)
 	}
@@ -142,7 +144,7 @@ func (memoryTranslator *MemorySegmentTranslator) writeDRegToMappedSegments(segme
 	memoryTranslator.writeR13ToSegmentStoredOnR14()
 }
 
-// Writes D register to the pointer
+// Writes D register to the pointer segment
 func (memoryTranslator *MemorySegmentTranslator) writeDRegToPointer(index string) {
 	if index == "0" {
 		memoryTranslator.builder.WriteString("@THIS\n")
@@ -154,11 +156,18 @@ func (memoryTranslator *MemorySegmentTranslator) writeDRegToPointer(index string
 	memoryTranslator.builder.WriteString("M=D\n")
 }
 
-// Writes D register to the temp
+// Writes D register to the temp segment
 func (memoryTranslator *MemorySegmentTranslator) writeDRegToTemp(index string) {
 	integerIndex, _ := strconv.Atoi(index)
 	tempRegister := fmt.Sprintf("%d", 5 + integerIndex)
 	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", tempRegister))
+	memoryTranslator.builder.WriteString("M=D\n")
+}
+
+// Writes D register to the static segment
+func (memoryTranslator *MemorySegmentTranslator) writeDRegToStatic(index string) {
+	staticVarSymbol := fmt.Sprintf("%s.%s", memoryTranslator.vmFileName, index)
+	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", staticVarSymbol))
 	memoryTranslator.builder.WriteString("M=D\n")
 }
 
