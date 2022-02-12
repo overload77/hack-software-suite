@@ -11,6 +11,7 @@ type MemorySegmentTranslator struct {
 	Handlers map[string]func(string, string)
 	builder *strings.Builder
 	mappings map[string]string
+	vmFileName string
 }
 
 func GetMemorySegmentTranslator(builder *strings.Builder) *MemorySegmentTranslator {
@@ -52,6 +53,8 @@ func (memoryTranslator *MemorySegmentTranslator) writeSegmentValueToDReg(segment
 		memoryTranslator.writeTempToDReg(index)
 	case "constant":
 		memoryTranslator.writeConstantToDReg(index)
+	case "static":
+		memoryTranslator.writeStaticToDReg(index)
 	default:
 		memoryTranslator.writeMappedSegmentsToDReg(segment, index)
 	}
@@ -94,6 +97,13 @@ func (memoryTranslator *MemorySegmentTranslator) writeTempToDReg(index string) {
 func (memoryTranslator *MemorySegmentTranslator) writeConstantToDReg(index string) {
 	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", index))
 	memoryTranslator.builder.WriteString("D=A\n")
+}
+
+// Writes static segment to D register
+func (memoryTranslator *MemorySegmentTranslator) writeStaticToDReg(index string) {
+	staticVarSymbol := fmt.Sprintf("%s.%s", memoryTranslator.vmFileName, index)
+	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", staticVarSymbol))
+	memoryTranslator.builder.WriteString("D=M\n")
 }
 
 // Pushes D register to stack
