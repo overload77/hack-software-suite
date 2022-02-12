@@ -3,6 +3,7 @@ package code
 import (
 	"fmt"
 	"log"
+	"strconv"
 	"strings"
 )
 
@@ -45,10 +46,12 @@ func (memoryTranslator *MemorySegmentTranslator) translatePop(segment, index str
 // Get's segments value and puts it into D register
 func (memoryTranslator *MemorySegmentTranslator) writeSegmentValueToDReg(segment, index string) {
 	switch segment {
-	case "constant":
-		memoryTranslator.writeConstantToDReg(index)
 	case "pointer":
 		memoryTranslator.writePointerToDReg(index)
+	case "temp":
+		memoryTranslator.writeTempToDReg(index)
+	case "constant":
+		memoryTranslator.writeConstantToDReg(index)
 	default:
 		memoryTranslator.writeMappedSegmentsToDReg(segment, index)
 	}
@@ -76,6 +79,14 @@ func (memoryTranslator *MemorySegmentTranslator) writePointerToDReg(index string
 	} else {
 		log.Fatal("Invalid pointer segment index")
 	}
+	memoryTranslator.builder.WriteString("D=M\n")
+}
+
+// Writes temp segment to D register
+func (memoryTranslator *MemorySegmentTranslator) writeTempToDReg(index string) {
+	integerIndex, _ := strconv.Atoi(index)
+	tempRegister := fmt.Sprintf("%d", 5 + integerIndex)
+	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", tempRegister))
 	memoryTranslator.builder.WriteString("D=M\n")
 }
 
