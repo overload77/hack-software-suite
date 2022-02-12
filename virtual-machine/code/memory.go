@@ -127,6 +127,8 @@ func (memoryTranslator *MemorySegmentTranslator) pushDRegisterToSegment(segment,
 	switch segment {
 	case "pointer":
 		memoryTranslator.writeDRegToPointer(index)
+	case "temp":
+		memoryTranslator.writeDRegToTemp(index)
 	default:
 		memoryTranslator.writeDRegToMappedSegments(segment, index)
 	}
@@ -149,6 +151,14 @@ func (memoryTranslator *MemorySegmentTranslator) writeDRegToPointer(index string
 	} else {
 		log.Fatal("Invalid pointer segment index")
 	}
+	memoryTranslator.builder.WriteString("M=D\n")
+}
+
+// Writes D register to the temp
+func (memoryTranslator *MemorySegmentTranslator) writeDRegToTemp(index string) {
+	integerIndex, _ := strconv.Atoi(index)
+	tempRegister := fmt.Sprintf("%d", 5 + integerIndex)
+	memoryTranslator.builder.WriteString(fmt.Sprintf("@%s\n", tempRegister))
 	memoryTranslator.builder.WriteString("M=D\n")
 }
 
