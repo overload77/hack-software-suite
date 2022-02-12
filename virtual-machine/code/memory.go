@@ -42,8 +42,6 @@ func (memoryTranslator *MemorySegmentTranslator) translatePop(segment, index str
 	memoryTranslator.pushDRegisterToSegment(segment, index)
 }
 
-/// Lower level methods for Push translator
-
 // Get's segments value and puts it into D register
 func (memoryTranslator *MemorySegmentTranslator) writeSegmentValueToDReg(segment, index string) {
 	switch segment {
@@ -95,8 +93,6 @@ func (memoryTranslator *MemorySegmentTranslator) pushDRegisterToStack() {
 	memoryTranslator.builder.WriteString("M=D\n")
 }
 
-/// Lower level methods for Pop translator
-
 // Pops the stack and puts value in D register
 func (memoryTranslator *MemorySegmentTranslator) popStackToDReg() {
 	memoryTranslator.builder.WriteString("@SP\n")
@@ -105,6 +101,7 @@ func (memoryTranslator *MemorySegmentTranslator) popStackToDReg() {
 	memoryTranslator.builder.WriteString("D=M\n")
 }
 
+// Writes value in D register to the segment
 func (memoryTranslator *MemorySegmentTranslator) pushDRegisterToSegment(segment, index string) {
 	switch segment {
 	case "pointer":
@@ -114,12 +111,15 @@ func (memoryTranslator *MemorySegmentTranslator) pushDRegisterToSegment(segment,
 	}
 }
 
+// Writes popped value to mapped segents(LCL, ARG, THIS and THAT)
+// Stores popped value and pointer to the segment entry temporarily in registers 13 & 14
 func (memoryTranslator *MemorySegmentTranslator) writeDRegToMappedSegments(segment, index string) {
 	memoryTranslator.writeDRegToR13()
 	memoryTranslator.writeSegmentPointerToR14(segment, index)
 	memoryTranslator.writeR13ToSegmentStoredOnR14()
 }
 
+// Writes D register to the pointer
 func (memoryTranslator *MemorySegmentTranslator) writeDRegToPointer(index string) {
 	if index == "0" {
 		memoryTranslator.builder.WriteString("@THIS\n")
