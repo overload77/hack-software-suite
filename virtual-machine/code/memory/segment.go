@@ -37,7 +37,7 @@ func getSegmentMapping(segmentName string) string {
 	}
 	segmentSymbol, isOk := mapping[segmentName]
 	if !isOk {
-		log.Fatal("Invalid memory segment %s", segmentName)
+		log.Fatalln("Invalid memory segment %s", segmentName)
 	}
 	return segmentSymbol
 }
