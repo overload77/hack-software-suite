@@ -3,11 +3,13 @@ package code
 import (
 	"log"
 	"strings"
+
+	"github.com/overload77/hack-software-suite/virtual-machine/code/memory"
 )
 
 type CodeContext struct {
 	arithmeticTranslator *ArithmeticTranslator
-	memorySegmentTranslator *MemorySegmentTranslator
+	memorySegmentTranslator *memory.MemorySegmentTranslator
 	builder *strings.Builder
 }
 
@@ -16,17 +18,17 @@ func GetCodeContext(params ...int) *CodeContext {
 	builder := &strings.Builder{}
 	return &CodeContext {
 		arithmeticTranslator: GetArithmeticTranslator(startingBranchNum, builder),
-		memorySegmentTranslator: GetMemorySegmentTranslator(builder),
+		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder),
 		builder: builder,
 	}
 }
 
 func (context *CodeContext) TranslateArithmetic(commandName string) {
-	context.arithmeticTranslator.Handlers[commandName]()
+	context.arithmeticTranslator.Translate(commandName)
 }
 
 func (context *CodeContext) TranslateMemory(pushOrPop string, segment string, index string) {
-	context.memorySegmentTranslator.Handlers[pushOrPop](segment, index)
+	context.memorySegmentTranslator.Translate(pushOrPop, segment, index)
 }
 
 func (context *CodeContext) GetCodeString() string {

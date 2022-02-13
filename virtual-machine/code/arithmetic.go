@@ -12,7 +12,6 @@ type ArithmeticTranslator struct {
 	builder *strings.Builder
 }
 
-
 func GetArithmeticTranslator(members ...interface{}) *ArithmeticTranslator {
 	startingBranchNum, builder := getBranchNumAndBuilder(members...)
 	arithmeticTranslator := &ArithmeticTranslator {
@@ -32,6 +31,14 @@ func GetArithmeticTranslator(members ...interface{}) *ArithmeticTranslator {
 	}
 	
 	return arithmeticTranslator
+}
+
+func (arithmeticTranslator *ArithmeticTranslator) Translate(command string) {
+	handlerMethod, isOk := arithmeticTranslator.Handlers[command]
+	if !isOk {
+		log.Fatalln("Invalid arithmetic command")
+	}
+	handlerMethod()
 }
 
 // Helper function to interpret and return branch number and builder from variable parameters
