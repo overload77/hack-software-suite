@@ -11,15 +11,18 @@ type CodeContext struct {
 	arithmeticTranslator *ArithmeticTranslator
 	memorySegmentTranslator *memory.MemorySegmentTranslator
 	builder *strings.Builder
+	vmFileName string
 }
 
-func GetCodeContext(params ...int) *CodeContext {
+func GetCodeContext(params ...interface{}) *CodeContext {
 	startingBranchNum := getStartingBranchNumber(params...)
+	vmFileName := params[0].(string)
 	builder := &strings.Builder{}
 	return &CodeContext {
 		arithmeticTranslator: GetArithmeticTranslator(startingBranchNum, builder),
-		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder),
+		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder, vmFileName),
 		builder: builder,
+		vmFileName: vmFileName,
 	}
 }
 
@@ -36,11 +39,11 @@ func (context *CodeContext) GetCodeString() string {
 }
 
 // Get starting value from optional parameters of CodeContext. Needed for multi-threading
-func getStartingBranchNumber(params ...int) int {
-	if len(params) > 1 {
+func getStartingBranchNumber(params ...interface{}) int {
+	if len(params) > 2 {
 		log.Fatal("Invalid arguments for CodeContext")
-	} else if len(params) == 1 {
-		return params[0]
+	} else if len(params) == 2 {
+		return params[1].(int)
 	}
 
 	return 0

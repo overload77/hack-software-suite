@@ -2,7 +2,6 @@ package main
 
 import (
 	"bufio"
-	"fmt"
 	"log"
 	"os"
 	"strings"
@@ -12,26 +11,11 @@ import (
 )
 
 func main() {
-	log.Println("Starting")
 	validateArgument()
-	
-	filename := os.Args[1]
-	file, err := os.Open(filename)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	scanner := bufio.NewScanner(file)
-	codeContext := code.GetCodeContext()
-	for scanner.Scan() {
-		line := scanner.Text()
-		commandType, commandName, firstArg, secondArg := parser.ParseLine(line)
-		fmt.Println("Parsed line:", commandType, commandName, firstArg, secondArg)
-		translateCommand(codeContext, commandType, commandName, firstArg, secondArg)
-	}
-	fmt.Println("Coded:", codeContext.GetCodeString())
-
-	file.Close()
+	sourceFile, asmFile := openFiles(os.Args[1])
+	translate(sourceFile, asmFile, os.Args[1])
+	closeFiles(sourceFile, asmFile)
+	log.Println("Done!")
 }
 
 func validateArgument() {
@@ -42,7 +26,20 @@ func validateArgument() {
 	}
 }
 
-func translateCommand(codeContext *code.CodeContext, commandType parser.CommandType,
+func translate(sourceFile, asmFile *os.File, sourceFileName string) {
+	scanner := bufio.NewScanner(sourceFile)
+	writer := bufio.NewWriter(asmFile)
+	codeContext := code.GetCodeContext(sourceFileName)
+	for scanner.Scan() {
+		line := strings.Trim(scanner.Text(), " ")
+		commandType, commandName, firstArg, secondArg := parser.ParseLine(line)
+		translateSingleCommand(codeContext, commandType, commandName, firstArg, secondArg)
+	}
+	writer.WriteString(codeContext.GetCodeString() + "\n")
+	writer.Flush()
+}
+
+func translateSingleCommand(codeContext *code.CodeContext, commandType parser.CommandType,
 			commandName string, firstCommandArg string, secondCommandArg string) {
 	if commandType == parser.Arithmetic {
 		codeContext.TranslateArithmetic(commandName)
@@ -64,4 +61,9 @@ func openFiles(filename string) (*os.File, *os.File) {
 	}
 
 	return sourceFile, asmFile
+}
+
+func closeFiles(sourceFile, asmFile *os.File) {
+	sourceFile.Close()
+	asmFile.Close()
 }

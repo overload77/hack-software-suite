@@ -12,8 +12,12 @@ type MemorySegmentTranslator struct {
 	vmFileName string
 }
 
-func GetMemorySegmentTranslator(builder *strings.Builder) *MemorySegmentTranslator {
-	memoryTranslator := &MemorySegmentTranslator {builder: builder}
+func GetMemorySegmentTranslator(builder *strings.Builder,
+		vmFileName string) *MemorySegmentTranslator {
+	memoryTranslator := &MemorySegmentTranslator {
+		builder: builder,
+		vmFileName: vmFileName,
+	}
 	memoryTranslator.handlers = map[string]func(string, string) {
 		"push": memoryTranslator.translatePush,
 		"pop": memoryTranslator.translatePop,
