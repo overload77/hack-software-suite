@@ -32,6 +32,9 @@ func translate(sourceFile, asmFile *os.File, sourceFileName string) {
 	codeContext := code.GetCodeContext(sourceFileName)
 	for scanner.Scan() {
 		line := strings.Trim(scanner.Text(), " ")
+		if strings.HasPrefix(line, "//") {
+			continue
+		}
 		commandType, commandName, firstArg, secondArg := parser.ParseLine(line)
 		translateSingleCommand(codeContext, commandType, commandName, firstArg, secondArg)
 	}
