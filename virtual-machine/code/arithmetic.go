@@ -94,6 +94,8 @@ func (arithmeticTranslator *ArithmeticTranslator) translateEq() {
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.builder.WriteString("0;JMP\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("A=M-1\n")
 	arithmeticTranslator.builder.WriteString("M=0\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.currentBranchNum++
@@ -113,6 +115,8 @@ func (arithmeticTranslator *ArithmeticTranslator) translateGt() {
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.builder.WriteString("0;JMP\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("A=M-1\n")
 	arithmeticTranslator.builder.WriteString("M=0\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.currentBranchNum++
@@ -132,6 +136,8 @@ func (arithmeticTranslator *ArithmeticTranslator) translateLt() {
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("@CONTINUE%d\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.builder.WriteString("0;JMP\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(ELSE%d)\n", arithmeticTranslator.currentBranchNum))
+	arithmeticTranslator.builder.WriteString("@SP\n")
+	arithmeticTranslator.builder.WriteString("A=M-1\n")
 	arithmeticTranslator.builder.WriteString("M=0\n")
 	arithmeticTranslator.builder.WriteString(fmt.Sprintf("(CONTINUE%d)\n", arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.currentBranchNum++
