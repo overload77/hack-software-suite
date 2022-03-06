@@ -1,7 +1,6 @@
 package parser
 
 import "strings"
-import "github.com/overload77/hack-software-suite/virtual-machine/code"
 
 type CommandType int8
 const (
@@ -11,7 +10,17 @@ const (
 	FunctionStuff CommandType = 3
 
 )
-var arithmeticCommands map[string]func() = code.GetArithmeticTranslator().Handlers
+var arithmeticCommands = map[string]struct{} {
+	"add": struct{}{},
+	"sub": struct{}{},
+	"neg": struct{}{},
+	"eq": struct{}{},
+	"gt": struct{}{},
+	"lt": struct{}{},
+	"and": struct{}{},
+	"or": struct{}{},
+	"not": struct{}{},
+}
 
 // Parses instruction into it's type and operands
 func ParseLine(line string) (CommandType, string, string, string) {

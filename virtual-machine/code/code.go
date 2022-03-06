@@ -1,10 +1,10 @@
 package code
 
 import (
-	"log"
 	"strings"
 
 	"github.com/overload77/hack-software-suite/virtual-machine/code/memory"
+	"github.com/overload77/hack-software-suite/virtual-machine/parser"
 )
 
 type CodeContext struct {
@@ -14,37 +14,33 @@ type CodeContext struct {
 	vmFileName string
 }
 
-func GetCodeContext(params ...interface{}) *CodeContext {
-	startingBranchNum := getStartingBranchNumber(params...)
-	vmFileName := params[0].(string)
+func GetCodeContext(vmFileName string) *CodeContext {
 	builder := &strings.Builder{}
 	return &CodeContext {
-		arithmeticTranslator: GetArithmeticTranslator(startingBranchNum, builder),
+		arithmeticTranslator: GetArithmeticTranslator(builder, vmFileName),
 		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder, vmFileName),
 		builder: builder,
 		vmFileName: vmFileName,
 	}
 }
 
-func (context *CodeContext) TranslateArithmetic(commandName string) {
-	context.arithmeticTranslator.Translate(commandName)
-}
-
-func (context *CodeContext) TranslateMemory(pushOrPop string, segment string, index string) {
-	context.memorySegmentTranslator.Translate(pushOrPop, segment, index)
+func (context *CodeContext) TranslateCommand(commandType parser.CommandType,
+		commandName string, firstCommandArg string, secondCommandArg string) {
+	if commandType == parser.Arithmetic {
+		context.translateArithmetic(commandName)
+	} else if commandType == parser.Memory {
+		context.translateMemory(commandName, firstCommandArg, secondCommandArg)
+	}
 }
 
 func (context *CodeContext) GetCodeString() string {
 	return context.builder.String()
 }
 
-// Get starting value from optional parameters of CodeContext. Needed for multi-threading
-func getStartingBranchNumber(params ...interface{}) int {
-	if len(params) > 2 {
-		log.Fatal("Invalid arguments for CodeContext")
-	} else if len(params) == 2 {
-		return params[1].(int)
-	}
+func (context *CodeContext) translateArithmetic(commandName string) {
+	context.arithmeticTranslator.Translate(commandName)
+}
 
-	return 0
+func (context *CodeContext) translateMemory(pushOrPop string, segment string, index string) {
+	context.memorySegmentTranslator.Translate(pushOrPop, segment, index)
 }
