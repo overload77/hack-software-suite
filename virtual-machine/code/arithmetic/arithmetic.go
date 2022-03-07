@@ -1,4 +1,4 @@
-package code
+package arithmetic
 
 import (
 	"fmt"
@@ -34,7 +34,7 @@ func GetArithmeticTranslator(builder *strings.Builder, vmFileName string) *Arith
 	return arithmeticTranslator
 }
 
-func (arithmeticTranslator *ArithmeticTranslator) Translate(command string) {
+func (arithmeticTranslator *ArithmeticTranslator) Translate(command, dummyOne, dummyTwo string) {
 	if handlerMethod, isOk := arithmeticTranslator.Handlers[command]; isOk {
 		handlerMethod()
 	} else {

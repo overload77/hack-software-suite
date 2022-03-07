@@ -38,7 +38,7 @@ func translateVmFile(sourceFile map[string]interface{}, asmFile *os.File) {
 	codeContext := code.GetCodeContext(sourceFile["filename"].(string))
 	for scanner.Scan() {
 		line := strings.Trim(scanner.Text(), " ")
-		if strings.HasPrefix(line, "//") {
+		if strings.HasPrefix(line, "//") || len(line) == 0 {
 			continue
 		}
 		codeContext.TranslateCommand(line)
