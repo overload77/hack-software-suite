@@ -25,10 +25,10 @@ var arithmeticCommands = map[string]struct{} {
 // Parses instruction into it's type and operands
 func ParseLine(line string) (CommandType, string, string, string) {
 	line = strings.Trim(line, " ")
-	commandType := getCommandType(line)
-	if commandType == Arithmetic {
+	switch commandType := getCommandType(line); commandType {
+	case Arithmetic:
 		return Arithmetic, line, "", ""
-	} else if commandType == Memory {
+	case Memory:
 		split := strings.Split(line, " ")
 		return Memory, split[0], split[1], split[2]
 	}

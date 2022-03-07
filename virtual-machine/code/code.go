@@ -12,6 +12,7 @@ type CodeContext struct {
 	memorySegmentTranslator *memory.MemorySegmentTranslator
 	builder *strings.Builder
 	vmFileName string
+	currentTranslator interface{} // Create an intr that all translaters implement Translate()
 }
 
 func GetCodeContext(vmFileName string) *CodeContext {
@@ -24,12 +25,16 @@ func GetCodeContext(vmFileName string) *CodeContext {
 	}
 }
 
-func (context *CodeContext) TranslateCommand(commandType parser.CommandType,
-		commandName string, firstCommandArg string, secondCommandArg string) {
-	if commandType == parser.Arithmetic {
+// TODO: Hmm, let's add currentTranslator, commandName, firstArg and secondArg into context
+// And let parser set those. That'll eliminate multiple switches. Then code context can just
+// call
+func (context *CodeContext) TranslateCommand(command string) {
+	commandType, commandName, firstArg, secondArg := parser.ParseLine(command)
+	switch commandType {
+	case parser.Arithmetic:
 		context.translateArithmetic(commandName)
-	} else if commandType == parser.Memory {
-		context.translateMemory(commandName, firstCommandArg, secondCommandArg)
+	case parser.Memory:
+		context.translateMemory(commandName, firstArg, secondArg)
 	}
 }
 

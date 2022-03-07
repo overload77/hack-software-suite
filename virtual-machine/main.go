@@ -8,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/overload77/hack-software-suite/virtual-machine/code"
-	"github.com/overload77/hack-software-suite/virtual-machine/parser"
 )
 
 func main() {
@@ -42,10 +41,9 @@ func translateVmFile(sourceFile map[string]interface{}, asmFile *os.File) {
 		if strings.HasPrefix(line, "//") {
 			continue
 		}
-		commandType, commandName, firstArg, secondArg := parser.ParseLine(line)
-		codeContext.TranslateCommand(commandType, commandName, firstArg, secondArg)
+		codeContext.TranslateCommand(line)
 	}
-	writer.WriteString(codeContext.GetCodeString() + "\n")
+	writer.WriteString(codeContext.GetCodeString())
 	writer.Flush()
 }
 

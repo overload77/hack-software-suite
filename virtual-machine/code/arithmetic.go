@@ -35,11 +35,11 @@ func GetArithmeticTranslator(builder *strings.Builder, vmFileName string) *Arith
 }
 
 func (arithmeticTranslator *ArithmeticTranslator) Translate(command string) {
-	handlerMethod, isOk := arithmeticTranslator.Handlers[command]
-	if !isOk {
+	if handlerMethod, isOk := arithmeticTranslator.Handlers[command]; isOk {
+		handlerMethod()
+	} else {
 		log.Fatalln("Invalid arithmetic command")
 	}
-	handlerMethod()
 }
 
 func (arithmeticTranslator *ArithmeticTranslator) translateAdd() {
