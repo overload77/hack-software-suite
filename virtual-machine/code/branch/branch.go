@@ -17,7 +17,7 @@ func GetBranchTranslator(builder *strings.Builder, vmFileName string) *BranchTra
 	branchTranslator := &BranchTranslator {
 		builder: builder,
 		vmFileName: vmFileName,
-		currentFunction: "main",
+		currentFunction: "null",
 	}
 	branchTranslator.Handlers = map[string]func(string) {
 		"label": branchTranslator.translateLabel,
@@ -37,12 +37,14 @@ func (translator *BranchTranslator) Translate(command, label, dummy string) {
 }
 
 func (translator *BranchTranslator) translateLabel(label string) {
+	translator.builder.WriteString(fmt.Sprintf("// Label %s\n", label))
 	label = fmt.Sprintf("(%s.%s$%s)\n", translator.vmFileName,
 						translator.currentFunction, label)
 	translator.builder.WriteString(label)
 }
 
 func (translator *BranchTranslator) translateGoto(label string) {
+	translator.builder.WriteString(fmt.Sprintf("// Goto %s\n", label))
 	jumpLocation := fmt.Sprintf("@%s.%s$%s\n", translator.vmFileName,
 								translator.currentFunction, label)
 	translator.builder.WriteString(jumpLocation)
@@ -50,6 +52,7 @@ func (translator *BranchTranslator) translateGoto(label string) {
 }
 
 func (translator *BranchTranslator) translateIfGoto(label string) {
+	translator.builder.WriteString(fmt.Sprintf("// If-Goto %s\n", label))
 	jumpLocation := fmt.Sprintf("@%s.%s$%s\n", translator.vmFileName,
 								translator.currentFunction, label)
 	translator.builder.WriteString("@SP\n")

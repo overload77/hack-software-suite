@@ -26,8 +26,11 @@ func (context *CodeContext) parseLine(line string) {
 	} else if strings.Contains(line, "push") || strings.Contains(line, "pop") {
 		split := strings.Split(line, " ")
 		context.setTranslatorAndArgs(context.memorySegmentTranslator, split[0], split[1], split[2])
+	} else if isBranchingCommand(line) {
+		split := strings.Split(line, " ")
+		context.setTranslatorAndArgs(context.branchTranslator, split[0], split[1], "")
 	} else {
-		log.Fatalln("This should be handled")
+		log.Fatalln("Unintegrated translator")
 	}
 }
 
@@ -40,4 +43,15 @@ func (context *CodeContext) setTranslatorAndArgs(translator Translator, command 
 		context.currentFirstArg = args[0]
 		context.currentSecondArg = args[1]
 	}
+}
+
+func isBranchingCommand(line string) bool {
+	branchingCommands := []string{"label", "goto", "if-goto"}
+	for _, command := range branchingCommands {
+		if strings.Contains(line, command) {
+			return true
+		}
+	}
+
+	return false
 }
