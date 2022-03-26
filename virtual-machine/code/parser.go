@@ -29,6 +29,12 @@ func (context *CodeContext) parseLine(line string) {
 	} else if isBranchingCommand(line) {
 		split := strings.Split(line, " ")
 		context.setTranslatorAndArgs(context.branchTranslator, split[0], split[1], "")
+	} else if isFunctionCommand(line) {
+		if split := strings.Split(line, " "); len(split) > 1 {
+			context.setTranslatorAndArgs(context.functionTranslator, split[0], split[1], split[2])
+		} else {
+			context.setTranslatorAndArgs(context.functionTranslator, split[0])
+		}
 	} else {
 		log.Fatalln("Unintegrated translator")
 	}
@@ -52,6 +58,15 @@ func isBranchingCommand(line string) bool {
 			return true
 		}
 	}
+	return false
+}
 
+func isFunctionCommand(line string) bool {
+	functionCommands := []string{"call", "function", "return"}
+	for _, command := range functionCommands {
+		if strings.Contains(line, command) {
+			return true
+		}
+	}
 	return false
 }

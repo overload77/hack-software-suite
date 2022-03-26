@@ -6,12 +6,14 @@ import (
 	"github.com/overload77/hack-software-suite/virtual-machine/code/arithmetic"
 	"github.com/overload77/hack-software-suite/virtual-machine/code/branch"
 	"github.com/overload77/hack-software-suite/virtual-machine/code/memory"
+	"github.com/overload77/hack-software-suite/virtual-machine/code/function"
 )
 
 type CodeContext struct {
-	arithmeticTranslator *arithmetic.ArithmeticTranslator
-	memorySegmentTranslator *memory.MemorySegmentTranslator
-	branchTranslator *branch.BranchTranslator
+	arithmeticTranslator Translator
+	memorySegmentTranslator Translator
+	branchTranslator Translator
+	functionTranslator Translator
 	builder *strings.Builder
 	vmFileName string
 	currentTranslator Translator
@@ -30,6 +32,7 @@ func GetCodeContext(vmFileName string) *CodeContext {
 		arithmeticTranslator: arithmetic.GetArithmeticTranslator(builder, vmFileName),
 		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder, vmFileName),
 		branchTranslator: branch.GetBranchTranslator(builder, vmFileName),
+		functionTranslator: function.GetFunctionTranslator(builder, vmFileName),
 		builder: builder,
 		vmFileName: vmFileName,
 	}

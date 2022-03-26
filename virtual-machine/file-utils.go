@@ -24,6 +24,7 @@ func openSingleSourceFile(filename string) []map[string]interface{} {
 	if err != nil {
 		log.Fatal(err)
 	}
+	
 	return []map[string]interface{} {
 		{"file": sourceFile, "filename": filename},
 	}
@@ -45,7 +46,7 @@ func openSourceFilesFromDir(dirname string) []map[string]interface{} {
 			log.Fatal(err)
 		} 
 
-		sourceFiles = append(sourceFiles, map[string]interface{}{
+		sourceFiles = append(sourceFiles, map[string]interface{} {
 			"file": sourceFile,
 			"filename": file.Name(),
 		})
