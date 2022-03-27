@@ -9,15 +9,13 @@ import (
 type BranchTranslator struct {
 	Handlers map[string]func(string)
 	builder *strings.Builder
-	vmFileName string
-	currentFunction string
+	currentFunction *string
 }
 
-func GetBranchTranslator(builder *strings.Builder, vmFileName string) *BranchTranslator {
+func GetBranchTranslator(builder *strings.Builder, currentFunction *string) *BranchTranslator {
 	branchTranslator := &BranchTranslator {
 		builder: builder,
-		vmFileName: vmFileName,
-		currentFunction: "null",
+		currentFunction: currentFunction,
 	}
 	branchTranslator.Handlers = map[string]func(string) {
 		"label": branchTranslator.translateLabel,
@@ -38,23 +36,20 @@ func (translator *BranchTranslator) Translate(command, label, dummy string) {
 
 func (translator *BranchTranslator) translateLabel(label string) {
 	translator.builder.WriteString(fmt.Sprintf("// Label %s\n", label))
-	label = fmt.Sprintf("(%s.%s$%s)\n", translator.vmFileName,
-						translator.currentFunction, label)
+	label = fmt.Sprintf("(%s$%s)\n", *translator.currentFunction, label)
 	translator.builder.WriteString(label)
 }
 
 func (translator *BranchTranslator) translateGoto(label string) {
 	translator.builder.WriteString(fmt.Sprintf("// Goto %s\n", label))
-	jumpLocation := fmt.Sprintf("@%s.%s$%s\n", translator.vmFileName,
-								translator.currentFunction, label)
+	jumpLocation := fmt.Sprintf("@%s$%s\n", *translator.currentFunction, label)
 	translator.builder.WriteString(jumpLocation)
 	translator.builder.WriteString("0;JMP\n")
 }
 
 func (translator *BranchTranslator) translateIfGoto(label string) {
 	translator.builder.WriteString(fmt.Sprintf("// If-Goto %s\n", label))
-	jumpLocation := fmt.Sprintf("@%s.%s$%s\n", translator.vmFileName,
-								translator.currentFunction, label)
+	jumpLocation := fmt.Sprintf("@%s$%s\n", *translator.currentFunction, label)
 	translator.builder.WriteString("@SP\n")
 	translator.builder.WriteString("M=M-1\n")
 	translator.builder.WriteString("A=M\n")

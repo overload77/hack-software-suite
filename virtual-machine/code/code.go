@@ -20,6 +20,7 @@ type CodeContext struct {
 	currentCommand string
 	currentFirstArg string
 	currentSecondArg string
+	currentFunction *string
 }
 
 type Translator interface {
@@ -28,13 +29,15 @@ type Translator interface {
 
 func GetCodeContext(vmFileName string) *CodeContext {
 	builder := &strings.Builder{}
+	currentFunction := "default"
 	return &CodeContext {
 		arithmeticTranslator: arithmetic.GetArithmeticTranslator(builder, vmFileName),
 		memorySegmentTranslator: memory.GetMemorySegmentTranslator(builder, vmFileName),
-		branchTranslator: branch.GetBranchTranslator(builder, vmFileName),
-		functionTranslator: function.GetFunctionTranslator(builder, vmFileName),
+		branchTranslator: branch.GetBranchTranslator(builder, &currentFunction),
+		functionTranslator: function.GetFunctionTranslator(builder, &currentFunction),
 		builder: builder,
 		vmFileName: vmFileName,
+		currentFunction: &currentFunction,
 	}
 }
 

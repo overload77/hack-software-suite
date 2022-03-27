@@ -9,21 +9,21 @@ type FunctionTranslator struct {
 	callHandler *handlers.CallHandler
 	functionHandler *handlers.CallHandler
 	returnHandler *handlers.CallHandler
-	currentFunction string
+	currentFunction *string
 	builder *strings.Builder
 }
 
-func GetFunctionTranslator(builder *strings.Builder, vmFileName string) *FunctionTranslator {
+func GetFunctionTranslator(builder *strings.Builder, currentFunction *string) *FunctionTranslator {
 	return &FunctionTranslator {
 		callHandler: handlers.GetCallHandler(builder),
-		currentFunction: "default",
+		currentFunction: currentFunction,
 	}
 }
 
 func (translator *FunctionTranslator) Translate(command, firstArg, secondArg string) {
 	switch command {
 	case "call":
-		translator.callHandler.HandleTranslation(translator.currentFunction, firstArg, secondArg)
+		translator.callHandler.HandleTranslation(*translator.currentFunction, firstArg, secondArg)
 	case "function": // FROM HERE
 		// GetCallHandler(dispatcher.builder)
 	case "return":		
