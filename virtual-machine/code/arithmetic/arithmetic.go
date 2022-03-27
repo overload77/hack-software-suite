@@ -126,7 +126,7 @@ func writeComparisonCommands(arithmeticTranslator *ArithmeticTranslator, jumpIns
 	arithmeticTranslator.builder.WriteString("A=M-1\n")
 	arithmeticTranslator.builder.WriteString("M=0\n")
 	arithmeticTranslator.builder.WriteString(
-		fmt.Sprintf("(@CONTINUE.%s.%d)\n", arithmeticTranslator.vmFileName,
+		fmt.Sprintf("(CONTINUE.%s.%d)\n", arithmeticTranslator.vmFileName,
 					arithmeticTranslator.currentBranchNum))
 	arithmeticTranslator.currentBranchNum++
 }
