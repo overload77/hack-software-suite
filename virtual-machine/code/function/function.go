@@ -9,7 +9,7 @@ import (
 type FunctionTranslator struct {
 	callHandler *handlers.CallHandler
 	declarationHandler *handlers.DeclarationHandler
-	returnHandler *handlers.CallHandler
+	returnHandler *handlers.ReturnHandler
 	currentFunction *string
 	builder *strings.Builder
 }
@@ -18,6 +18,7 @@ func GetFunctionTranslator(builder *strings.Builder, currentFunction *string) *F
 	return &FunctionTranslator {
 		callHandler: handlers.GetCallHandler(builder),
 		declarationHandler: handlers.GetDeclarationHandler(builder),
+		returnHandler: handlers.GetReturnHandler(builder),
 		currentFunction: currentFunction,
 	}
 }
@@ -30,8 +31,6 @@ func (translator *FunctionTranslator) Translate(command, firstArg, secondArg str
 		*translator.currentFunction = firstArg
 		translator.declarationHandler.HandleTranslation(firstArg, secondArg)
 	case "return":		
-		// GetCallHandler(dispatcher.builder)
+		translator.returnHandler.HandleTranslation()
 	}
-	
-	// GetCallHandler(dispatcher.builder) // Temp
 }
