@@ -26,9 +26,7 @@ func validateArgument() {
 }
 
 func translate(sourceFiles []map[string]interface{}, asmFile *os.File) {
-	writer := bufio.NewWriter(asmFile)
-	code.AddBootstrapCode(writer)
-	writer.Flush()
+	bootstrapStategy(sourceFiles[0], asmFile)
 	for _, sourceFile := range sourceFiles {
 		translateVmFile(sourceFile, asmFile)
 	}
@@ -43,4 +41,12 @@ func translateVmFile(sourceFile map[string]interface{}, asmFile *os.File) {
 	}
 	writer.WriteString(codeContext.GetCodeString())
 	writer.Flush()
+}
+
+func bootstrapStategy(firstVmFile map[string]interface{}, asmFile *os.File) {
+	if firstVmFile["filename"].(string) == "Sys.vm" {
+		writer := bufio.NewWriter(asmFile)
+		code.AddBootstrapCode(writer)
+		writer.Flush()
+	}
 }

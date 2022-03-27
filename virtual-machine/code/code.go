@@ -50,10 +50,6 @@ func (context *CodeContext) TranslateCommand(command string) {
 	}
 }
 
-func (context *CodeContext) GetCodeString() string {
-	return context.builder.String()
-}
-
 func AddBootstrapCode(buffer *bufio.Writer) {
 	buffer.WriteString("// Bootstrapping\n")
 	buffer.WriteString("@256\n")
@@ -62,6 +58,10 @@ func AddBootstrapCode(buffer *bufio.Writer) {
 	buffer.WriteString("M=D\n")
 	buffer.WriteString("@Sys.init\n")
 	buffer.WriteString("0;JMP\n")
+}
+
+func (context *CodeContext) GetCodeString() string {
+	return context.builder.String()
 }
 
 func trimLine(line string) (string, bool) {
