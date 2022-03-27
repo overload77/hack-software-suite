@@ -2,6 +2,7 @@
 package main
 
 import (
+	"io/fs"
 	"io/ioutil"
 	"log"
 	"os"
@@ -37,8 +38,9 @@ func openSourceFilesFromDir(dirname string) []map[string]interface{} {
 	}
 	
 	sourceFiles := []map[string]interface{}{}
+	insertSysFileIfExists(dirname, files, &sourceFiles)
 	for _, file := range files {
-		if !strings.HasSuffix(file.Name(), ".vm") {
+		if !strings.HasSuffix(file.Name(), ".vm") || file.Name() == "Sys.vm" {
 			continue
 		}
 		sourceFile, err := os.Open(dirname + "/" + file.Name())
@@ -62,6 +64,21 @@ func openOutputFile(filepath string) *os.File {
 	}
 
 	return asmFile
+}
+
+func insertSysFileIfExists(dirname string, files []fs.FileInfo, sourceFiles *[]map[string]interface{}) {
+	for _, file := range files {
+		if file.Name() == "Sys.vm" {
+			sourceFile, err := os.Open(dirname + "/" + file.Name())
+			if err != nil {
+				log.Fatal(err)
+			}
+			*sourceFiles = append(*sourceFiles, map[string]interface{} {
+				"file": sourceFile,
+				"filename": file.Name(),
+			})
+		}
+	}
 }
 
 func closeFiles(sourceFiles []map[string]interface{}, asmFile *os.File) {

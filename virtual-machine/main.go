@@ -21,7 +21,7 @@ func validateArgument() {
 	if len(os.Args) != 2 {
 		log.Fatalln("Invalid number of arguments")
 	} else if strings.HasSuffix(os.Args[1], "/") {
-		log.Fatalln("Should not and with trailing slash")
+		log.Fatalln("Should not end with trailing slash")
 	}
 }
 
