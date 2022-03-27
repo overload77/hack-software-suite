@@ -36,7 +36,8 @@ func (handler *ReturnHandler) saveLocalToR13() {
 
 func (handler *ReturnHandler) saveReturnAddrToR14() {
 	handler.builder.WriteString("@5\n")
-	handler.builder.WriteString("D=D-A\n")
+	handler.builder.WriteString("A=D-A\n")
+	handler.builder.WriteString("D=M\n")
 	handler.builder.WriteString("@R14\n")
 	handler.builder.WriteString("M=D\n")
 }
