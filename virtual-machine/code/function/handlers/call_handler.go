@@ -31,6 +31,7 @@ func (handler *CallHandler) HandleTranslation(functionToReturn, functionToCall, 
 	handler.pushThis()
 	handler.pushThat()
 	handler.repositionArg()
+	handler.repositionLcl()
 	handler.jumpToFunction()
 	handler.plantReturnLabel(returnAddress)
 }
@@ -83,6 +84,13 @@ func (handler *CallHandler) repositionArg() {
 	handler.builder.WriteString("@SP\n")
 	handler.builder.WriteString("D=M-D\n")
 	handler.builder.WriteString("@ARG\n")
+	handler.builder.WriteString("M=D\n")
+}
+
+func (handler *CallHandler) repositionLcl() {
+	handler.builder.WriteString("@SP\n")
+	handler.builder.WriteString("D=M\n")
+	handler.builder.WriteString("@LCL\n")
 	handler.builder.WriteString("M=D\n")
 }
 
