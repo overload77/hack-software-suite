@@ -15,7 +15,7 @@ type CallHandler struct {
 }
 
 func GetCallHandler(builder *strings.Builder) *CallHandler {
-	return &CallHandler {
+	return &CallHandler{
 		builder: builder,
 		returnAddrCounter: map[string]int{},
 	}
