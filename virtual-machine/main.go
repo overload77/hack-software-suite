@@ -26,6 +26,9 @@ func validateArgument() {
 }
 
 func translate(sourceFiles []map[string]interface{}, asmFile *os.File) {
+	writer := bufio.NewWriter(asmFile)
+	code.AddBootstrapCode(writer)
+	writer.Flush()
 	for _, sourceFile := range sourceFiles {
 		translateVmFile(sourceFile, asmFile)
 	}

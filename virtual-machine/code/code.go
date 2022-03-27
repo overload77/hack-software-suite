@@ -1,12 +1,13 @@
 package code
 
 import (
+	"bufio"
 	"strings"
 
 	"github.com/overload77/hack-software-suite/virtual-machine/code/arithmetic"
 	"github.com/overload77/hack-software-suite/virtual-machine/code/branch"
-	"github.com/overload77/hack-software-suite/virtual-machine/code/memory"
 	"github.com/overload77/hack-software-suite/virtual-machine/code/function"
+	"github.com/overload77/hack-software-suite/virtual-machine/code/memory"
 )
 
 type CodeContext struct {
@@ -51,6 +52,16 @@ func (context *CodeContext) TranslateCommand(command string) {
 
 func (context *CodeContext) GetCodeString() string {
 	return context.builder.String()
+}
+
+func AddBootstrapCode(buffer *bufio.Writer) {
+	buffer.WriteString("// Bootstrapping\n")
+	buffer.WriteString("@256\n")
+	buffer.WriteString("D=A\n")
+	buffer.WriteString("@SP\n")
+	buffer.WriteString("M=D\n")
+	buffer.WriteString("@Sys.init\n")
+	buffer.WriteString("0;JMP\n")
 }
 
 func trimLine(line string) (string, bool) {
