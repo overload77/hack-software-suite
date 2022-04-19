@@ -1,4 +1,4 @@
-# Hack virtual machine
+# Jack virtual machine
 JVM like virtual machine implementation for Jack compiled vm code(like Java's bytecode) for Hack platform<br>
 It works as a stack machine
 
